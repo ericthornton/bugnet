@@ -11,13 +11,14 @@ version: 1.0.0.{build}
 #    environment configuration    #
 #---------------------------------#
 
-# environment variables
-environment:
-  UnitTest: false
+# enable patching of AssemblyInfo.* files
 
-# enable service required for build/tests
-services:
-  - mssql2014           # start SQL Server 2014 Express
+assembly_info:
+  patch: true
+  file: src\Common\GlobalAssemblyInfo.cs
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{version}"
 
 
 #---------------------------------#
@@ -28,11 +29,14 @@ services:
 configuration: Release
 
 build:
-  project: src\BuildScripts\build.proj
+  project: src\BugNET.sln
   verbosity: minimal
+  publish_wap: true     
 
-  
-  
+# scripts to run before build
+before_build:
+  - nuget restore src\BugNET.sln
+
 #---------------------------------#
 #       tests configuration       #
 #---------------------------------#
@@ -42,13 +46,8 @@ test: off
 #---------------------------------#
 #      artifacts configuration    #
 #---------------------------------#
- 
-artifacts:
-# pushing entire folder as a zip archive
-  - path: src\build\dist
-    name: BugNet-$(configuration)
-    type: zip
 
+# web deploy artifacts are copied already
 
 #---------------------------------#
 #     deployment configuration    #

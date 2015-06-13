@@ -27,6 +27,7 @@
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <AutoParameterizationWebConfigConnectionStrings>false</AutoParameterizationWebConfigConnectionStrings>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -126,12 +127,12 @@
       <HintPath>..\packages\DotNetOpenAuth.OpenId.RelyingParty.4.3.4.13329\lib\net45-full\DotNetOpenAuth.OpenId.RelyingParty.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -1385,6 +1386,9 @@
     <Content Include="Issues\CreateIssue.aspx" />
     <Content Include="Issues\IssueSearch.aspx" />
     <Content Include="Issues\MyIssues.aspx" />
+    <None Include="Parameters.xml">
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="Projects\ReleaseNotes.aspx" />
     <Content Include="Providers\DataProviders\SqlDataProvider\0.62.SqlDataProvider.sql" />
     <Content Include="Providers\DataProviders\SqlDataProvider\0.64.SqlDataProvider.sql" />
@@ -1422,7 +1426,7 @@
     <Content Include="Providers\DataProviders\SqlDataProvider\1.6.327.0.SqlDataProvider.sql" />
     <Content Include="Providers\DataProviders\SqlDataProvider\BugNet.Data.SqlDataProvider.sql" />
     <Content Include="Providers\DataProviders\SqlDataProvider\BugNet.Schema.SqlDataProvider.sql" />
-    <Content Include="Providers\DataProviders\SqlDataProvider\Latest.SqlDataProvider.sql" />
+    <None Include="Providers\DataProviders\SqlDataProvider\Latest.SqlDataProvider.sql" />
     <Content Include="Scripts\attrchange.js" />
     <Content Include="Scripts\bootstrap-dialog.js" />
     <Content Include="Scripts\bootstrap-dialog.min.js" />
@@ -1673,6 +1677,7 @@
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
     <Content Include="fonts\FontAwesome.otf" />
+    <None Include="Properties\PublishProfiles\Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
@@ -3499,9 +3504,15 @@
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+       Other similar extension points exist, see Microsoft.Common.targets.-->
+  <Target Name="BeforeBuild"> 
+    <Copy Condition="'$(APPVEYOR)' != '' And '$(APPVEYOR)' And Exists('Providers\DataProviders\SqlDataProvider\Latest.SqlDataProvider.sql')" SourceFiles="Providers\DataProviders\SqlDataProvider\Latest.SqlDataProvider.sql" 
+	DestinationFiles="Providers\DataProviders\SqlDataProvider\$(APPVEYOR_BUILD_VERSION).SqlDataProvider.sql" />
+    <ItemGroup Condition="'$(APPVEYOR)' != '' And '$(APPVEYOR)' And Exists('Providers\DataProviders\SqlDataProvider\$(APPVEYOR_BUILD_VERSION).SqlDataProvider.sql')">
+      <Content Include="Providers\DataProviders\SqlDataProvider\$(APPVEYOR_BUILD_VERSION).SqlDataProvider.sql" />
+    </ItemGroup>
   </Target>
+  <!--
   <Target Name="AfterBuild">
   </Target>
   -->
